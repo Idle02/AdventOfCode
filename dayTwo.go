@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -26,40 +27,27 @@ func isValidSequence(sequence []int) bool {
 	return true
 }
 
-func calculateSafesIntolerant(values [][]int) int {
-	var safes = 0
-	for _, split := range values {
-		if isValidSequence(split) {
-			safes++
-		}
-	}
-	return safes
-}
-
 func produceVariation(source []int, offset int) []int {
 	if offset == -1 {
 		return source
 	}
-	var duplicate = make([]int, len(source))
-	copy(duplicate, source)
-	return append(duplicate[:offset], duplicate[offset+1:]...)
+	return slices.Delete(slices.Clone(source), offset, offset+1)
 }
 
-func variationsAsLoop(source []int) func(yield func([]int) bool) {
+func variationsAsLoop(source []int, once bool) func(yield func([]int) bool) {
 	return func(yield func([]int) bool) {
 		for i := 0; i < len(source)+1; i++ {
-			if !yield(produceVariation(source, i-1)) {
+			if !yield(produceVariation(source, i-1)) || once {
 				return
 			}
 		}
 	}
 }
 
-func calculateSafesTolerant(values [][]int) int {
+func calculateSafeSequences(values [][]int, tolerant bool) int {
 	var safes = 0
-
 	for _, split := range values {
-		for sequence := range variationsAsLoop(split) {
+		for sequence := range variationsAsLoop(split, !tolerant) {
 			if isValidSequence(sequence) {
 				safes++
 				break
@@ -91,6 +79,6 @@ func main() {
 		}(seq)
 	}
 
-	fmt.Println(calculateSafesIntolerant(numbers), "intolerant sequences")
-	fmt.Println(calculateSafesTolerant(numbers), "tolerant sequences")
+	fmt.Println(calculateSafeSequences(numbers, false), "intolerant sequences")
+	fmt.Println(calculateSafeSequences(numbers, true), "tolerant sequences")
 }
