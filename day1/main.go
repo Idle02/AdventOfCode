@@ -1,5 +1,13 @@
 package main
 
+import (
+	"bytes"
+	"fmt"
+	"log"
+	"os"
+	"slices"
+)
+
 func btoi(b []byte) int {
 	n := 0
 	for _, c := range b {
