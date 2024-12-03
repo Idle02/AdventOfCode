@@ -8,17 +8,9 @@ import (
 //go:embed input.txt
 var Input []byte
 
-var approachingSeq = []byte{
-	'm', 'u', 'l', '(',
-}
-
-var allowingSeq = []byte{
-	'd', 'o', '(', ')',
-}
-
-var disallowingSeq = []byte{
-	'd', 'o', 'n', '\'', 't', '(', ')',
-}
+var approachingSeq = []byte(`mul(`)
+var allowingSeq = []byte(`do()`)
+var disallowingSeq = []byte(`don't()`)
 
 var sequencesSimple = [][]byte{
 	approachingSeq,
@@ -44,26 +36,21 @@ func isNum(b byte) bool {
 
 // need to switch out sequences simple for sequences logic (...) lazy
 func getSequenceIndex(b byte) int {
-	var skip = true
-	var idx = -1
-	for i, seq := range sequencesSimple {
+	var ctr = 0
+	for i, seq := range sequencesLogic {
 		if cursor >= len(seq) || seq[cursor] != b {
 			continue
 		}
 		if cursor == len(seq)-1 {
-			idx = i
-			break
+			cursor = 0
+			return i
 		}
-		skip = false
+		ctr = cursor + 1
 	}
 
-	if skip {
-		cursor = -1
-	}
+	cursor = ctr
 
-	cursor++
-
-	return idx
+	return -1
 }
 
 func main() {
