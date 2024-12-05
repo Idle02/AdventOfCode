@@ -36,6 +36,7 @@ func traverseInDirection(data [][]byte, x, y, dx, dy, bound int) int {
 
 func directionsAsLoop() func(yield func(int, int) bool) {
 	return func(yield func(int, int) bool) {
+		// muffin approach
 		for dx := -1; dx <= 1; dx++ {
 			for dy := -1; dy <= 1; dy++ {
 				if !yield(dx, dy) {
